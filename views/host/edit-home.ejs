@@ -1,0 +1,84 @@
+<%- include('../partials/head') %>
+
+
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #ff5a5f;
+  }
+  
+  button {
+    padding: 12px;
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #e04e53;
+  }
+</style>
+
+<body> 
+  
+  <%- include('../partials/nav') %>
+  
+  <main>
+  <% if (editing == true) { %>
+  <h1>Pleade edit your home details</h1>
+<% } else { %>
+  <h1>Please Add your Home details</h1>
+<% } %>
+
+    <form action="/host/<%= editing? 'updateHome':'result' %>" method="POST">
+      <input type="hidden" name="id" value="<%=editing?home.id:''%>">
+      
+      <label for="username">Your Name</label>
+      <input type="text" placeholder="Enter your name" name="username" id="username" value="<%=editing?home.username:''%>">
+
+      <label for="price">Price per night</label>
+      <input type="number" placeholder="Price per night" name="price" id="price" value="<%=editing?home.price:''%>">
+
+      <label for="location">Location</label>
+      <input type="text" placeholder="Locations" name="location" id="location" value="<%=editing?home.location:''%>">
+
+      <label for="rating">Rating</label>
+      <input type="text" placeholder="Ratings" name="rating" id="rating" value="<%=editing?home.rating:''%>">
+      
+      <label for="phone">Phone Number</label>
+      <input type="tel" placeholder="Phone number" name="phone" id="phone" value="<%=editing?home.phone:''%>">
+
+      <label for="photo">Photo URL</label>
+      <input type="text" placeholder="Enter photo url" name="photo" id="photo" value="<%=editing?home.photo:''%>">
+
+      <button type="submit" ><%= editing?'Update':'Add to home' %></button>
+    </form>
+  </main>
+  
+</body>
+</html>
