@@ -3,20 +3,20 @@
 const Home=require('../models/homedata');
 
 exports.homePage=(req,res,next)=>{
-   const registeredHome=Home.fetchAll(registeredHome=> res.render('store/homelist',{registeredHome:registeredHome,pagetitle:"Home List"}));  
+   Home.fetchAll().then(([registeredHome])=>{res.render('store/homelist',{registeredHome:registeredHome,pagetitle:"Home List"})})
 };
 
 exports.homedetails=(req,res,next)=>{
    const homeid=req.params.homeid;
-   console.log(homeid); 
-   Home.findbyid(homeid,home=>{
-      console.log('Home detail found',home);
+   Home.findbyid(homeid).then(([homes])=>{
+      const home=homes[0];
+      
       res.render('store/home-detail',{home:home,pagetitle:"Home details"});
    }) 
 };
 
 exports.getIndex=(req,res,next)=>{   
-      const favouritelist=Home.fetchAll(registeredHome=> res.render('store/homepage',{registeredHome:registeredHome,pagetitle:"Airbnb Home"}));  
+       Home.fetchAll().then(([registeredHome])=> res.render('store/homepage',{registeredHome:registeredHome,pagetitle:"Airbnb Home"}));  
 };
 
 exports.getbookings=(req,res,next)=>{
@@ -26,8 +26,8 @@ exports.getbookings=(req,res,next)=>{
 
 exports.getFavouriteList=(req,res,next)=>{
  Favourites.getFavouriteList((favourites)=>{
-   Home.fetchAll((registeredHomes)=>{
-      const favouritesWithDetails=favourites.map(homeId=>registeredHomes.find(home=>home.id===homeId));
+    Home.fetchAll().then(([registeredHome])=>{
+      const favouritesWithDetails=favourites.map(homeId=>registeredHome.find(home=>home.id===homeId));
       console.log("favourite homes",favouritesWithDetails)
       res.render('store/favourite-list',{favourites:favouritesWithDetails,pageTitle:"My favourites"});
    });

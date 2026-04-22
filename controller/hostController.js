@@ -3,54 +3,73 @@
     res.render('host/edit-home',{editing:false, home:""});
 }
 
- exports.getEditHome=(req,res,next)=>{
-    const homeId=req.params.homeid;
-    const editing=req.query.editing==='true';
-     
-    Home.findbyid(homeId,home=>{
-        if(!home){
-            console.log("Home not found for edition");
-            return res.redirect('/host/host-home-list')
-        }
+exports.getEditHome = async (req, res, next) => {
+  const homeId = req.params.homeid;
+  const editing = req.query.editing === 'true';
 
-        console.log(homeId,editing,home);
-    res.render('host/edit-home',{pagetitle:"Edit your Home",editing:editing,home:home});
+  try {
+    const [rows] = await Home.findById(homeId); // returns [rows, fields]
+    const home = rows[0]; // first row
+
+    if (!home) {
+      console.log("Home not found for edition");
+      return res.redirect('/host/host-home-list');
+    }
+
+    res.render('host/edit-home', {
+      pagetitle: "Edit your Home",
+      editing: editing,
+      home: home
     });
-}
+  } catch (err) {
+    console.error("Error fetching home:", err);
+    res.redirect('/host/host-home-list');
+  }
+};
+
 
 
 exports.gethosthome=(req,res,next)=>{
     const success=req.query.success==='true';
-    const favouritelist=Home.fetchAll(registeredHome=> res.render('host/host-home-list',{registeredHome:registeredHome,pagetitle:"Host home list",success:success}));
+    Home.fetchAll().then(([registeredHome])=> {res.render('host/host-home-list',{registeredHome:registeredHome,pagetitle:"Host home list",success:success})});
 }
 
 
 
 exports.postAddHome=(req,res,next)=>{  
-  const{username,price ,location,rating,phone,photo}=req.body;
-  const home=new Home(username,price ,location,rating,phone,photo);
+  const{username,price ,location,rating,phone,photo,description,id}=req.body;
+  const home=new Home(username,price ,location,rating,phone,photo,description,id);
   home.save();
     
     res.redirect('/host/gethosthome?success=true');
 };
 
-exports.postUpdateHome=(req,res,next)=>{
+exports.postUpdateHome = async (req, res, next) => {
+
+    const { id, username, price, location, rating, phone, photo, description } = req.body;
+
+ 
+
+    // Create Home instance
+    const home = new Home(username, price, location, rating, phone, photo, description, id);
+
+    // Await DB operation
+    await home.save();
+
+    // Redirect after success
+    res.redirect("/host/gethosthome");
   
-  const{id,username,price ,location,rating,phone,photo}=req.body;
-  const home=new Home(username,price ,location,rating,phone,photo);
-  home.id=id;
-  home.save();
-    res.redirect('/host/gethosthome');
 };
+
 
 exports.postDeleteHome=(req,res,next)=>{
   
   const homeid=req.params.homeid;
- Home.deletebyid(homeid,error=>{
-    if(error){
-        console.log('error while deleting home',error);
-    }
+ Home.deletebyid(homeid).then(()=>{
+   
     res.redirect('/host/gethosthome');
+ }).catch(error=>{
+    console.log('error while deleteing home');
  })
   
 };
