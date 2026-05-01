@@ -21,7 +21,7 @@ app.use('/host',hostRouter);
 
 //Error Page messege
 app.use(errorController.errorController)
-const PORT=3001;
+const PORT=process.env.PORT || 3000;
 app.listen(PORT,(req,res)=>{
   console.log(`server is sucessfuly at address http://localhost:${PORT}`);
 })
